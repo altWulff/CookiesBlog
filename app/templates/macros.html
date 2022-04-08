@@ -1,0 +1,40 @@
+{% macro with_errors(field) %}
+{% if field.errors -%}
+    <span style="color: red;">{{ field.errors[0] }}</span>
+{%- endif %}
+{% endmacro %}
+
+{% macro render_field(field) %}
+ <div class="form-floating mb-3">
+    {{ field(class="form-control", id="floatingInput", placeholder=' ') }}
+    {{ field.label(for="floatingInput")}}
+    {{ with_errors(field) }}
+</div>
+{% endmacro %}
+
+{% macro render_email_field(field) %}
+<div class="form-floating mb-3">
+    {{ field(type="email", class="form-control", id="floatingInput", placeholder=' ') }}
+    {{ field.label(for="floatingInput")}}
+    {{ with_errors(field) }}
+</div>
+{% endmacro %}
+
+{% macro render_password_field(field) %}
+<div class="form-floating mb-3">
+    {{ field(type="password", class="form-control", id="floatingPassword", placeholder=' ') }}
+    {{ field.label(for="floatingPassword")}}
+    {{ with_errors(field) }}
+</div>
+{% endmacro %}
+
+{% macro render_textarea_field(field) %}
+<div class="mb-3">
+    {{ field(type='textarea', class="form-control", id="textarea", placeholder=field.name.title(), rows='10') }}
+    {{ with_errors(field) }}
+</div>
+{% endmacro %}
+
+{% macro submit_button_field(text) %}
+<button type="submit" class="w-100 btn btn-lg btn-primary">{{ text }}</button>
+{% endmacro %}

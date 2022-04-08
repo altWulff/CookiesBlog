@@ -1,0 +1,12 @@
+{% extends "base/layout.html" %}
+{% block content %}
+  <div class="container">
+    <h1>Login Account</h1>
+    <form method="post" novalidate>
+      {{ form.csrf_token }}
+      {{ render_field(form.username) }}
+      {{ render_email_field(form.email) }}
+      {{ submit_button_field('Log in to account') }}
+      </form>
+  </div>
+  {% endblock %}
