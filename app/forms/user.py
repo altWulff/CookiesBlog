@@ -1,6 +1,6 @@
 from starlette_wtf import StarletteForm
-from wtforms import StringField, PasswordField, TextAreaField
-from wtforms.validators import DataRequired, Email, EqualTo, optional, length
+from wtforms import StringField, PasswordField
+from wtforms.validators import DataRequired, Email, EqualTo
 from wtforms.widgets import PasswordInput
 from wtforms.fields import EmailField
 
@@ -48,10 +48,3 @@ class LoginUserForm(StarletteForm):
             Email()
         ]
     )
-
-
-class NewPostForm(StarletteForm):
-    title = StringField(
-        'Post Title'
-    )
-    body = TextAreaField('Post Body', [optional(), length(max=200)])

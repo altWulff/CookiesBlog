@@ -6,7 +6,7 @@ class NoInstance(type):
         raise TypeError("Can`t instance directly")
 
 
-class Crypt(metaclass=NoInstances):
+class Crypt(metaclass=NoInstance):
     crypt_ctx = CryptContext(schemes=["sha256_crypt"])
 
     @classmethod
