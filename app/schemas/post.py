@@ -4,8 +4,8 @@ from pydantic import BaseModel
 
 class PostBase(BaseModel):
     title: str | None = None
-    timestamp: date | None = datetime.utcnow()
-    last_edit: date | None = datetime.utcnow()
+    timestamp: datetime | None = datetime.utcnow()
+    last_edit: datetime | None = datetime.utcnow()
     body: str | None = None
 
 

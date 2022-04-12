@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette_wtf import CSRFProtectMiddleware, csrf_protect
-from config import settings
 from fastapi.staticfiles import StaticFiles
+from config import settings
 from db import engine
 from db import Base
 
@@ -18,4 +18,8 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 from views import views
+from api import api
+
 app.include_router(views)
+app.include_router(api)
+
