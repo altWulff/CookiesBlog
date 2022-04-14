@@ -21,8 +21,8 @@ class PostUpdate(PostBase):
 class Post(PostBase):
     id: int
     title: str
-    timestamp: date
-    last_edit: date
+    timestamp: datetime
+    last_edit: datetime
 
     class Config:
         orm_mode = True

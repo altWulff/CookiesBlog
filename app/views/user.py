@@ -22,7 +22,7 @@ async def create_account(request: Request):
             password=form.password.data,
         )
         db = SessionLocal()
-        crud.create_user(db, user)
+        app.crud.create_user(db, user)
         flash(request, message='New user register', category='info')
         return RedirectResponse(url='/', status_code=303)
 
