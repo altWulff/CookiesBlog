@@ -1,2 +1,2 @@
-from .user import *
-from .post import *
+from app.crud.user import *
+from app.crud.post import *
