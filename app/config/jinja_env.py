@@ -13,5 +13,5 @@ def get_flashed_messages(request: Request):
     return request.session.pop("_messages") if "_messages" in request.session else []
 
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="./app/templates")
 templates.env.globals['get_flashed_messages'] = get_flashed_messages

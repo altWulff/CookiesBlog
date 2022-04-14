@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Request
 from starlette.responses import RedirectResponse
-from app import csrf_protect
-from schemas import User, UserCreate
-from forms import RegisterUserForm, LoginUserForm
-from db import engine, get_db, SessionLocal
-from config.jinja_env import templates, flash
-import crud
+from starlette_wtf import csrf_protect
+from app.schemas import User, UserCreate
+from app.forms import RegisterUserForm, LoginUserForm
+from app.db import engine, get_db, SessionLocal
+from app.config.jinja_env import templates, flash
+import app.crud
 
 
 router = APIRouter()

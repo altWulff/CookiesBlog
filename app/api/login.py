@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
-from schemas import User
-from models import User as UserModel
+from app.schemas import User
+from app.models import User as UserModel
 from fastapi import Depends
 from .auth import get_current_user
 

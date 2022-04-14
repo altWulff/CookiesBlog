@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi import Request
 from fastapi.responses import HTMLResponse
-from config.jinja_env import templates
+from app.config.jinja_env import templates
 
 
 router = APIRouter()

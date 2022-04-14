@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
-from models import User
-from schemas import UserCreate
-from config.security import Crypt
+from app.models import User
+from app.schemas import UserCreate
+from app.config.security import Crypt
 
 
 def get_user(db: Session, user_id: int):

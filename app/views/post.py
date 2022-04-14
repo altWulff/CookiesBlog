@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Request
 from starlette.responses import RedirectResponse
-from app import app, csrf_protect
-from schemas import Post, PostCreate
-from forms import NewPostForm
-from config.jinja_env import templates, flash
+from starlette_wtf import csrf_protect
+from app.schemas import Post, PostCreate
+from app.forms import NewPostForm
+from app.config.jinja_env import templates, flash
 
 
 router = APIRouter()
