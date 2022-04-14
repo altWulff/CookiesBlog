@@ -5,10 +5,21 @@
 - Написана на `Python 3.10`
 - В основе beck-end части `FastAPI`
 - Шаблонизатор front-end `Jinja2`
-- SQL `SQLite`, Todo `PostgreSQL`
+- SQL `SQLite`, TODO `PostgreSQL`
 - ORM `SQLAlchemy`
 - Миграции БД `Alembic`
-- Движок поиска `elasticsearch`
+- TODO Движок поиска `elasticsearch`
+
+## Локальный запуск проекта
+`$ git clone git@github.com:altWulff/CookiesBlog.git && cd CookiesBlog`
+
+`$ virtualenv venv`
+
+`$ source venv/bin/activate`
+
+`$ pip install -r requirements.txt`
+
+`$ uvicorn app:app --reload`
 
 ## Описание системы
 Проект состоит из следующих блоков
@@ -24,6 +35,6 @@
 - Пользователь - имеет те же права, что и Аноним плюс может редактировать свои посты, и удалять их. Требуется регистрация
 - Администратор - все то же что и пользователь, плюс может удалять и редактировать чужие посты. А также редактировать данные других пользователей
 
-Проект в разработке.
+## Проект в разработке.
 
 
