@@ -26,5 +26,5 @@ def create_post(
     post_in: PostCreate,
 ) -> Post:
     # TODO fix rewrite datetime type to string in <post_in> object
-    post = crud.post.create(db, post_in)
+    post = crud.post.create_with_user(db, post_in, user_id=1)
     return post

@@ -1,37 +1,56 @@
+from typing import Any
 from sqlalchemy.orm import Session
 from app.models import User
-from app.schemas import UserCreate
+from app.schemas import UserCreate, UserUpdate
 from app.config.security import Crypt
+from .base import CRUDBase
 
 
-def get_user(db: Session, user_id: int):
-    return db.query(User).filter_by(id=user_id).first()
+class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
+    def get_by_email(self, db: Session, email: str) -> User | None:
+        return db.query(User).filter_by(email=email).first()
+
+    def create(self, db: Session, obj_in: UserCreate) -> User:
+        db_obj = User(
+            username=obj_in.username,
+            email=obj_in.email,
+            hashed_password=Crypt.hash(obj_in.password)
+        )
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+
+    def update(
+        self, db: Session, *, db_obj: User, obj_in: UserUpdate | dict[str, Any]
+    ) -> User:
+        if isinstance(obj_in, dict):
+            update_data = obj_in
+        else:
+            update_data = obj_in.dict(exclude_unset=True)
+        if update_data["password"]:
+            hashed_password = Crypt.hash(update_data["password"])
+            del update_data["password"]
+            update_data["hashed_password"] = hashed_password
+        return super().update(db, db_obj=db_obj, obj_in=update_data)
+
+    def authenticate(self, db: Session, *, email: str, password: str) -> User | None:
+        user = self.get_by_email(db, email=email)
+        if not user:
+            return None
+        if not Crypt.verify(password, user.hashed_password):
+            return None
+        return user
+
+    def is_active(self, user: User) -> bool:
+        return user.is_active
+
+    def is_superuser(self, user: User) -> bool:
+        return user.is_superuser
 
 
-def get_user_by_name(db: Session, user_name: int):
-    return db.query(User).filter_by(username=user_name).first()
+user = CRUDUser(User)
 
-
-def get_user_by_email(db: Session, email: str):
-    return db.query(User).filter_by(email=email).first()
-
-
-def get_superuser(db: Session):
-    return db.query(User).filter(User.is_superuser).first()
-
-
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(User).offset(skip).limit(limit).all()
-
-
-def create_user(db: Session, user: UserCreate) -> dict:
-    hash_password = Crypt.hash(user.password)
-    new_user = User(
-        username=user.username,
-        email=user.email,
-        hashed_password=hash_password
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user.__dict__
+__all__ = (
+    'user',
+)
