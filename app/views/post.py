@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Request
 from starlette.responses import RedirectResponse
 from starlette_wtf import csrf_protect
+
+from app.db import SessionLocal
 from app.schemas import Post, PostCreate
 from app.forms import NewPostForm
 from app.config.jinja_env import templates, flash
-
+import app.crud as crud
 
 router = APIRouter()
 
@@ -14,10 +16,12 @@ router = APIRouter()
 async def create_new_post(request: Request):
     form = await NewPostForm.from_formdata(request)
     if await form.validate_on_submit():
-        user = PostCreate(
+        post = PostCreate(
             title=form.title.data,
             body=form.body.data,
         )
+        db = SessionLocal()
+        crud.post.create_with_user(db, post, user_id=1)
         flash(request, message='New post create', category='info')
         return RedirectResponse(url='/', status_code=303)
 

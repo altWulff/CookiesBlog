@@ -1,6 +1,8 @@
 <div class="row g-5">
     <div class="col-md-8">
-      {% include 'body/single_post.html' %}
+        {% for post in posts %}
+            {% include 'body/single_post.html' %}
+        {% endfor %}
       {% include 'body/paginate.html' %}
     </div>
     <div class="col-md-4">
