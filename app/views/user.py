@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Request
 from starlette.responses import RedirectResponse
 from starlette_wtf import csrf_protect
-from app.schemas import User, UserCreate
+from app.schemas import UserCreate
 from app.forms import RegisterUserForm, LoginUserForm
-from app.db import engine, get_db, SessionLocal
+from app.db import SessionLocal
 from app.config.jinja_env import templates, flash
-import app.crud
+from app.api.login import login_access_token
+import app.crud as crud
 
 
 router = APIRouter()
@@ -22,7 +23,7 @@ async def create_account(request: Request):
             password=form.password.data,
         )
         db = SessionLocal()
-        app.crud.create_user(db, user)
+        crud.user.create(db, user)
         flash(request, message='New user register', category='info')
         return RedirectResponse(url='/', status_code=303)
 
@@ -40,8 +41,12 @@ async def login_account(request: Request):
     form = await LoginUserForm.from_formdata(request)
     if await form.validate_on_submit():
         db = SessionLocal()
-        # TODO login function
-        flash(request, message=f'User Login: {form.username.data}', category='info')
+        login_access_token(db, form)
+        flash(
+            request,
+            message=f'User Login: {form.username.data}',
+            category='info'
+        )
         return RedirectResponse(url='/', status_code=303)
 
     return_status_code = 422 if form.errors else 200
