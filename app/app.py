@@ -20,5 +20,5 @@ from app.views import views
 from app.api import api
 
 app.include_router(views)
-app.include_router(api)
+app.include_router(api, prefix='/api')
 
