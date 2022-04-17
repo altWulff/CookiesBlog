@@ -48,3 +48,10 @@ class LoginUserForm(StarletteForm):
             Email()
         ]
     )
+    password = PasswordField(
+        'Password',
+        widget=PasswordInput(hide_value=False),
+        validators=[
+            DataRequired('Please enter your password')
+        ]
+    )
