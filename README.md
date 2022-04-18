@@ -1,16 +1,16 @@
-# Проект Блога Cookies
-Разработать блог на `Python3`, с пользователями, их постами, и с пагинацией страниц. А так же поиск по сайту. Далее Проект
+# Project Cookies Blog 
+Develop a blog in `Python3`, with users, their posts, and pagination. As well as site search
 
-## Библиотеки
-- Написана на `Python 3.10`
-- В основе beck-end части `FastAPI`
-- Шаблонизатор front-end `Jinja2`
+## Libraries
+- Written in `Python 3.10`
+- At the heart of the back-end part of `FastAPI`
+- Front-end template engine `Jinja2`
 - SQL `SQLite`, TODO `PostgreSQL`
 - ORM `SQLAlchemy`
-- Миграции БД `Alembic`
-- TODO Движок поиска `elasticsearch`
+- Database `Alembic` migrations
+- TODO `elasticsearch` search engine
 
-## Локальный запуск проекта
+## Local launch of the project
 `$ git clone git@github.com:altWulff/CookiesBlog.git && cd CookiesBlog`
 
 `$ virtualenv venv`
@@ -21,25 +21,24 @@
 
 `$ uvicorn app.app:app --reload`
 
-Документация api `http://127.0.0.1:8000/docs`
+Api documentation `http://127.0.0.1:8000/docs`
 
-## Описание проекта
-Основания идея проекта: написание API, 
-и запросом к ендпоитам на фронтенд шаблонизатором.
+## Project Description
+The main idea of the project: writing an API,
+and a request to the end plates on the front-end template engine.
 
-Проект состоит из следующих блоков
+The project consists of the following blocks
 
-1. Регистрация аутентификация и авторизация пользователей
-2. Админка для редактирования, удаления постов. Только для Администратора
-3. Функционал для блогера, создание, удаление, редактирование постов
-4. Поиск созданных постов через поиск 
+1. Registration authentication and authorization of users
+2. Admin panel for editing, deleting posts. Admin Only
+3. Functionality for a blogger, creating, deleting, editing posts
+4. Search created posts through search
 
-### Типы пользователей
-Проект предусматривает различные уровни доступа пользователя: Аноним, Пользователь, Администратор
-- Аноним - имеет доступ к главной странице, и может просматривать содержимое постов. Нет необходимости в регистрации
-- Пользователь - имеет те же права, что и Аноним плюс может редактировать свои посты, и удалять их. Требуется регистрация
-- Администратор - все то же что и пользователь, плюс может удалять и редактировать чужие посты. А также редактировать данные других пользователей
-
-## Проект в разработке.
+### User types
+The project provides for different levels of user access: Anonymous, User, Administrator
+- Anonymous - has access to the main page, and can view the content of the posts. No need for registration
+- User - has the same rights as Anonymous plus can edit his posts and delete them. Registration required
+- Administrator - everything is the same as the user, plus he can delete and edit other people's posts. And also edit the data of other users
+## The project is under development.
 
 
