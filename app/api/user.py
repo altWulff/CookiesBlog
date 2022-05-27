@@ -45,7 +45,7 @@ def get_current_user(
     return current_user
 
 
-@router.put('{user_id}', response_model=User)
+@router.put('/{user_id}', response_model=User)
 def update_user(
     *,
     db: Session = Depends(get_db),
