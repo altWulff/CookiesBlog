@@ -5,10 +5,7 @@ Develop a blog in `Python3`, with users, their posts, and pagination. As well as
 - Written in `Python 3.10`
 - At the heart of the back-end part of `FastAPI`
 - Front-end template engine `Jinja2`
-- SQL `SQLite`, TODO `PostgreSQL`
-- ORM `SQLAlchemy`
-- Database `Alembic` migrations
-- TODO `elasticsearch` search engine
+- NoSQL `MONGODB`
 
 ## Local launch of the project
 `$ git clone git@github.com:altWulff/CookiesBlog.git && cd CookiesBlog`

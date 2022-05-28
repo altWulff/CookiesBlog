@@ -5,10 +5,8 @@
 - Написана на `Python 3.10`
 - В основе beck-end части `FastAPI`
 - Шаблонизатор front-end `Jinja2`
-- SQL `SQLite`, TODO `PostgreSQL`
-- ORM `SQLAlchemy`
-- Миграции БД `Alembic`
-- TODO Движок поиска `elasticsearch`
+- NoSQL `MONGODB`
+
 
 ## Локальный запуск проекта
 `$ git clone git@github.com:altWulff/CookiesBlog.git && cd CookiesBlog`
