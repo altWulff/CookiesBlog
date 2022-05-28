@@ -1,18 +1,15 @@
-from fastapi import APIRouter
-from fastapi import Request
+from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
-from app.config.jinja_env import templates
-from app.db.session import SessionLocal
-from app.api.post import read_post
 
+from app.api.post import list_posts
+from app.config.jinja_env import templates
 
 router = APIRouter()
 
 
 @router.get("/", response_class=HTMLResponse)
 async def read_item(request: Request):
-    db = SessionLocal()
-    posts = read_post(db)
+    posts = await list_posts()
     return templates.TemplateResponse(
-        "index.html", {"request": request, 'posts': posts}
+        "index.html", {"request": request, "posts": posts}
     )

@@ -1,18 +1,25 @@
-from .base import Base
-from .session import SessionLocal, engine
+import os
+
+import motor.motor_asyncio
+from bson import ObjectId
+
+from app.config import settings
+
+client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGODB_URL)
+db = client.blog
 
 
-class DBCTXManager:
-    def __init__(self):
-        self.db = SessionLocal()
+class PyObjectId(ObjectId):
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
 
-    def __enter__(self):
-        return self.db
+    @classmethod
+    def validate(cls, v):
+        if not ObjectId.is_valid(v):
+            raise ValueError("Invalid objectid")
+        return ObjectId()
 
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.db.close()
-
-
-def get_db():
-    with DBCTXManager() as db:
-        yield db
+    @classmethod
+    def __modify_schema__(cls, field_schema):
+        field_schema.update(type="string")

@@ -1,3 +1,3 @@
-from .user import User, UserCreate, UserUpdate
-from .post import Post, PostCreate, PostUpdate
+from .post import Post, PostUpdate
 from .token import Token, TokenPayload
+from .user import User, UserUpdate

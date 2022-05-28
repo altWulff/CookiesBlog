@@ -1,56 +1,86 @@
-from typing import Any, Dict, Generic, List, Type, TypeVar, Union
+"""
+Module contains superclass for CRUD
+"""
 
+from typing import Generic, TypeVar
+
+from fastapi import Body
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
-from sqlalchemy.orm import Session
 
-from app.db.base import Base
+from app.db import db
 
-ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
-class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
-    def __init__(self, model: Type[ModelType]):
+class CRUDBase(Generic[CreateSchemaType, UpdateSchemaType]):
+    """Create Read Update Delete, base operation on database"""
+
+    def __init__(self, model: str):
+        """
+        :param model: collection name in database
+        """
         self.model = model
 
-    def get(self, db: Session, id: Any) -> ModelType | None:
-        return db.query(self.model).filter(self.model.id == id).first()
-
-    def get_multi(
-        self, db: Session, skip: int = 0, limit: int = 100
-    ) -> list[ModelType]:
-        return db.query(self.model).offset(skip).limit(limit).all()
-
-    def create(self, db: Session, obj_in: CreateSchemaType) -> ModelType:
-        db_obj = self.model(**obj_in.dict())
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
+    async def get(self, db_id: str) -> dict | None:
+        """
+        Get object from database
+        :param db_id: cursor object
+        :return: database record or None
+        """
+        db_obj = await db[self.model].find_one({"_id": db_id})
         return db_obj
 
-    def update(
-        self,
-        db: Session,
-        db_obj: ModelType,
-        obj_in: Union[UpdateSchemaType, dict[str, Any]]
-    ) -> ModelType:
-        obj_data = jsonable_encoder(db_obj)
-        if isinstance(obj_in, dict):
-            update_data = obj_in
-        else:
-            update_data = obj_in.dict(exclude_unset=True)
-        for field in obj_data:
-            if field in update_data:
-                setattr(db_obj, field, update_data[field])
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
-        return db_obj
+    async def get_multi(self, skip: int = 0, limit: int = 100) -> list[dict]:
+        """
+        Get list of objects in database
+        :param skip: offset
+        :param limit: max request
+        :return: list of records from database, length limit 1000 rec.
+        """
+        db_objects = await db[self.model].find().to_list(1000)
+        return db_objects[skip : skip + limit]
 
-    def remove(self, db: Session, id: int) -> ModelType:
-        obj = db.query(self.model).get(id)
-        db.delete(obj)
-        db.commit()
+    async def create(self, obj_in: CreateSchemaType = Body(...)) -> dict:
+        """
+        Create object in database
+        :param obj_in: data from body request
+        :return: database record, from created data
+        """
+        db_obj = jsonable_encoder(obj_in)
+        new_student = await db[self.model].insert_one(db_obj)
+        create_student = await db[self.model].find_one({"_id": new_student.inserted_id})
+        return create_student
+
+    async def update(self, db_id: str, obj: UpdateSchemaType = Body(...)) -> dict:
+        """
+        Update object in database
+        :param db_id: cursor update record
+        :param obj: request body with data
+        :return: updated record
+        """
+        obj = {k: v for k, v in obj.dict().items() if v is not None}
+
+        if obj:
+            update_result = await db[self.model].update_one(
+                {"_id": db_id}, {"$set": obj}
+            )
+
+            if update_result.modified_count == 1:
+                if (
+                    update_obj := await db[self.model].find_one({"_id": db_id})
+                ) is not None:
+                    return update_obj
+
+        if (existing_obj := await db[self.model].find_one({"_id": db_id})) is not None:
+            return existing_obj
+
+    async def remove(self, db_id: str) -> dict:
+        """
+        Remove object in database
+        :param db_id: cursor remove obj
+        :return: deleted dict object
+        """
+        obj = await db[self.model].delete_one({"_id": db_id})
         return obj

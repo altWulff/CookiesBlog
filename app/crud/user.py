@@ -1,56 +1,57 @@
 from typing import Any
-from sqlalchemy.orm import Session
-from app.models import User
-from app.schemas import UserCreate, UserUpdate
+
+from fastapi import Body
+
 from app.config.security import Crypt
+from app.db import db
+from app.schemas import User, UserUpdate
+
 from .base import CRUDBase
 
 
-class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
-    def get_by_email(self, db: Session, email: str) -> User | None:
-        return db.query(User).filter_by(email=email).first()
-
-    def create(self, db: Session, obj_in: UserCreate) -> User:
-        db_obj = User(
-            username=obj_in.username,
-            email=obj_in.email,
-            hashed_password=Crypt.hash(obj_in.password)
-        )
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
+class CRUDUser(CRUDBase[User, UserUpdate]):
+    async def get_by_email(self, email: str) -> dict | None:
+        """
+        Get user from database
+        :param email: user emil
+        :return: database record or None
+        """
+        db_obj = await db[self.model].find_one({"email": f"/@{email}/i"})
         return db_obj
 
-    def update(
-        self, db: Session, *, db_obj: User, obj_in: UserUpdate | dict[str, Any]
-    ) -> User:
-        if isinstance(obj_in, dict):
-            update_data = obj_in
-        else:
-            update_data = obj_in.dict(exclude_unset=True)
-        if update_data["password"]:
-            hashed_password = Crypt.hash(update_data["password"])
-            del update_data["password"]
-            update_data["hashed_password"] = hashed_password
-        return super().update(db, db_obj=db_obj, obj_in=update_data)
+    async def create(self, obj_in: User = Body(...)) -> dict:
+        """
+        Create user in database, with hashed password
+        :param obj_in: data from body request
+        :return: database record, from created data
+        """
+        obj_in.password = Crypt.hash(obj_in.password)
+        record = await super().create(obj_in)
+        return record
 
-    def authenticate(self, db: Session, *, email: str, password: str) -> User | None:
-        user = self.get_by_email(db, email=email)
-        if not user:
-            return None
-        if not Crypt.verify(password, user.hashed_password):
-            return None
-        return user
+    async def update(self, db_id: str, obj: UserUpdate = Body(...)) -> dict:
+        record = await super().update(db_id, obj)
+        if "password" in record:
+            record["password"] = str(Crypt.hash(record["password"]))
+        return record
 
-    def is_active(self, user: User) -> bool:
+    async def authenticate(self, email: str, password: str) -> dict | None:
+        auth_user = await self.get_by_email(email)
+        if not auth_user:
+            return None
+        if not Crypt.verify(password, auth_user["password"]):
+            return None
+        return auth_user
+
+    @staticmethod
+    async def is_active(user: User) -> bool:
         return user.is_active
 
-    def is_superuser(self, user: User) -> bool:
+    @staticmethod
+    async def is_superuser(user: User) -> bool:
         return user.is_superuser
 
 
-user = CRUDUser(User)
+user = CRUDUser("user")
 
-__all__ = (
-    'user',
-)
+__all__ = ("user",)

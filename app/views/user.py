@@ -1,57 +1,50 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, status
 from starlette.responses import RedirectResponse
 from starlette_wtf import csrf_protect
-from app.schemas import UserCreate
-from app.forms import RegisterUserForm, LoginUserForm
-from app.db import SessionLocal
-from app.config.jinja_env import templates, flash
-from app.api.login import login_access_token
-import app.crud as crud
 
+import app.crud as crud
+# from app.api.login import login_access_token
+from app.config.jinja_env import flash, templates
+from app.forms import LoginUserForm, RegisterUserForm
+from app.schemas import User
 
 router = APIRouter()
 
 
-@router.route('/register', methods=['GET', 'POST'])
+@router.route("/register", methods=["GET", "POST"])
 @csrf_protect
 async def create_account(request: Request):
     form = await RegisterUserForm.from_formdata(request)
     if await form.validate_on_submit():
-        user = UserCreate(
+        user = User(
             username=form.username.data,
             email=form.email.data,
             password=form.password.data,
         )
-        db = SessionLocal()
-        crud.user.create(db, user)
-        flash(request, message='New user register', category='info')
-        return RedirectResponse(url='/', status_code=303)
+        crud.user.create(user)
+        flash(request, message="New user register", category="info")
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-    return_status_code = 422 if form.errors else 200
+    status_code = status.HTTP_422_UNPROCESSABLE_ENTITY if form.errors else 200
     return templates.TemplateResponse(
         "user/register.html",
-        {"request": request, 'form': form},
-        status_code=return_status_code
+        {"request": request, "form": form},
+        status_code=status_code,
     )
 
 
-@router.route('/login', methods=['GET', 'POST'])
+@router.route("/login", methods=["GET", "POST"])
 @csrf_protect
 async def login_account(request: Request):
     form = await LoginUserForm.from_formdata(request)
     if await form.validate_on_submit():
-        db = SessionLocal()
-        login_access_token(db, form)
-        flash(
-            request,
-            message=f'User Login: {form.username.data}',
-            category='info'
-        )
-        return RedirectResponse(url='/', status_code=303)
+        # login_access_token(form)
+        flash(request, message=f"User Login: {form.username.data}", category="info")
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-    return_status_code = 422 if form.errors else 200
+    status_code = status.HTTP_422_UNPROCESSABLE_ENTITY if form.errors else 200
     return templates.TemplateResponse(
-            "user/login.html",
-            {"request": request, 'form': form},
-            status_code=return_status_code
-        )
+        "user/login.html",
+        {"request": request, "form": form},
+        status_code=status_code,
+    )

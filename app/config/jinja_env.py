@@ -14,4 +14,4 @@ def get_flashed_messages(request: Request):
 
 
 templates = Jinja2Templates(directory="./app/templates")
-templates.env.globals['get_flashed_messages'] = get_flashed_messages
+templates.env.globals["get_flashed_messages"] = get_flashed_messages
