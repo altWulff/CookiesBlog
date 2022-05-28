@@ -1,10 +1,8 @@
 from starlette_wtf import StarletteForm
 from wtforms import StringField, TextAreaField
-from wtforms.validators import optional, length
+from wtforms.validators import length, optional
 
 
 class NewPostForm(StarletteForm):
-    title = StringField(
-        'Post Title'
-    )
-    body = TextAreaField('Post Body', [optional(), length(max=200)])
+    title = StringField("Post Title")
+    body = TextAreaField("Post Body", [optional(), length(max=200)])
