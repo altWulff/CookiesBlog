@@ -7,4 +7,4 @@ class Token(BaseModel):
 
 
 class TokenPayload(BaseModel):
-    sub: int | int = int
+    sub: str | str = str

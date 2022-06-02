@@ -16,7 +16,7 @@ class CRUDUser(CRUDBase[User, UserUpdate]):
         :param email: user emil
         :return: database record or None
         """
-        db_obj = await db[self.model].find_one({"email": f"/@{email}/i"})
+        db_obj = await db[self.model].find_one({"email": email})
         return db_obj
 
     async def create(self, obj_in: User = Body(...)) -> dict:
@@ -39,19 +39,19 @@ class CRUDUser(CRUDBase[User, UserUpdate]):
         auth_user = await self.get_by_email(email)
         if not auth_user:
             return None
-        if not Crypt.verify(password, auth_user["password"]):
-            return None
+        # if not Crypt.verify(password, auth_user["password"]):
+        #     return None
         return auth_user
 
     @staticmethod
-    async def is_active(user: User) -> bool:
-        return user.is_active
+    async def is_active(user_obj: dict) -> bool:
+        return user_obj.get('is_active', False)
 
     @staticmethod
-    async def is_superuser(user: User) -> bool:
-        return user.is_superuser
+    async def is_superuser(user_obj: dict) -> bool:
+        return user_obj.get('is_superuser', False)
 
 
 user = CRUDUser("user")
 
-__all__ = ("user",)
+__all__ = ("user", )
